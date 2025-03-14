@@ -12,22 +12,26 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+import environ
+import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=d==#+#2-c*#7a(w&dp7%o32b&=fw55b5#v*r1#!z5ls159ne#'
+SECRET_KEY = env.str('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "*",
-]
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'user.User'
 
@@ -52,7 +56,23 @@ INSTALLED_APPS = [
     ## build-in apps
     'ckeditor',
     'ckeditor_uploader',
+    'query_counter',
 ]
+
+{
+    'DQC_SLOWEST_COUNT': 5,
+    'DQC_TABULATE_FMT': 'pretty',
+    'DQC_SLOW_THRESHOLD': 1,  # seconds
+    'DQC_INDENT_SQL': True,
+    'DQC_PYGMENTS_STYLE': 'tango',
+    'DQC_PRINT_ALL_QUERIES': False,
+    'DQC_COUNT_QTY_MAP': {
+        5: 'green',
+        10: 'white',
+        20: 'yellow',
+        30: 'red',
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -62,6 +82,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # query counter
+    'query_counter.middleware.DjangoQueryCounterMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -79,6 +102,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # custom
+                'config.global_context.global_context',
             ],
         },
     },
@@ -90,12 +116,27 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+### default
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+### psql
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'kinochi',
+#         'USER': 'kinochi',
+#         'PASSWORD': 'kinochi',
+#         'HOST': '127.0.0.1', ### or 'localhost'
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation

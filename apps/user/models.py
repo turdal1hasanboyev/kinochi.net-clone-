@@ -21,11 +21,14 @@ class User(BaseModel, AbstractUser):
 
     username = None
     email = models.EmailField(unique=True, db_index=True, max_length=50)
-    first_name = models.CharField(max_length=150, blank=True, null=True, db_index=True)
-    last_name = models.CharField(max_length=150, blank=True, null=True, db_index=True)
+    first_name = models.CharField(
+        max_length=150, blank=True, null=True, db_index=True)
+    last_name = models.CharField(
+        max_length=150, blank=True, null=True, db_index=True)
 
     image = models.ImageField(upload_to="users", blank=True, null=True)
-    phone_number = models.CharField(max_length=20, blank=True, null=True, db_index=True, unique=True)
+    phone_number = models.CharField(
+        max_length=20, blank=True, null=True, db_index=True, unique=True)
     description = RichTextField(blank=True, null=True)
 
     objects = CustomUserManager()
