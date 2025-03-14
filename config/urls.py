@@ -26,6 +26,9 @@ from django.views.static import serve
 urlpatterns = [
     path('kinochi/', admin.site.urls),
 
+    # ckeditor path
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+
     # local paths
     path('', include('apps.common.urls')),
     path('', include('apps.user.urls')),
